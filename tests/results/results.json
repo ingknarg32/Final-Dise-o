@@ -4,15 +4,15 @@
     "viewport": "390x844 @2x (emulación móvil)",
     "camera": "cámara simulada con el marcador Hiro (640x480)",
     "render": "software (SwiftShader)",
-    "date": "2026-11-19T20:48:44.425Z"
+    "date": "2026-11-19T20:56:58.426Z"
   },
   "summary": {
-    "total": 27,
-    "passed": 27
+    "total": 28,
+    "passed": 28
   },
   "perComponent": {
     "cpu": {
-      "ms": 1253,
+      "ms": 1197,
       "screen": "ar",
       "status": "Marcador detectado",
       "model": true,
@@ -23,7 +23,7 @@
       "tris": 490
     },
     "ram": {
-      "ms": 183,
+      "ms": 185,
       "screen": "ar",
       "status": "Marcador detectado",
       "model": true,
@@ -34,7 +34,7 @@
       "tris": 176
     },
     "gpu": {
-      "ms": 228,
+      "ms": 240,
       "screen": "ar",
       "status": "Marcador detectado",
       "model": true,
@@ -45,7 +45,7 @@
       "tris": 5150
     },
     "motherboard": {
-      "ms": 177,
+      "ms": 209,
       "screen": "ar",
       "status": "Marcador detectado",
       "model": true,
@@ -94,7 +94,7 @@
       "requirement": "FR2, NFR1",
       "description": "Sesión AR de cpu: marcador detectado y modelo anclado",
       "expected": "estado «Marcador detectado», modelo presente, cámara activa",
-      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 1253 ms",
+      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 1197 ms",
       "pass": true
     },
     {
@@ -118,7 +118,7 @@
       "requirement": "FR2, NFR1",
       "description": "Sesión AR de ram: marcador detectado y modelo anclado",
       "expected": "estado «Marcador detectado», modelo presente, cámara activa",
-      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 183 ms",
+      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 185 ms",
       "pass": true
     },
     {
@@ -142,7 +142,7 @@
       "requirement": "FR2, NFR1",
       "description": "Sesión AR de gpu: marcador detectado y modelo anclado",
       "expected": "estado «Marcador detectado», modelo presente, cámara activa",
-      "observed": "Marcador detectado; modelo=true; etiquetas=5; detección en 228 ms",
+      "observed": "Marcador detectado; modelo=true; etiquetas=5; detección en 240 ms",
       "pass": true
     },
     {
@@ -182,7 +182,7 @@
       "requirement": "FR2, NFR1",
       "description": "Sesión AR de motherboard: marcador detectado y modelo anclado",
       "expected": "estado «Marcador detectado», modelo presente, cámara activa",
-      "observed": "Marcador detectado; modelo=true; etiquetas=7; detección en 177 ms",
+      "observed": "Marcador detectado; modelo=true; etiquetas=7; detección en 209 ms",
       "pass": true
     },
     {
@@ -198,7 +198,15 @@
       "requirement": "FR3",
       "description": "Cuatro sesiones AR consecutivas (3 s de pausa en el menú entre sesiones)",
       "expected": "4 sesiones con marcador detectado",
-      "observed": "cpu:1253ms ram:183ms gpu:228ms motherboard:177ms",
+      "observed": "cpu:1197ms ram:185ms gpu:240ms motherboard:209ms",
+      "pass": true
+    },
+    {
+      "id": "TC17",
+      "requirement": "NFR2",
+      "description": "En viewport móvil (390x844) los controles de la vista AR quedan dentro de la ventana",
+      "expected": "ventana 390x844; Menú y Rotar visibles",
+      "observed": "390x844 menu→378 rotar↓819 (×4 componentes)",
       "pass": true
     },
     {
@@ -206,7 +214,7 @@
       "requirement": "FR3",
       "description": "Estabilidad: 6 sesiones AR seguidas con pausa de 3 s (regresión del fallo idPatt)",
       "expected": "6/6 con marcador detectado",
-      "observed": "6/6 (201, 195, 209, 205, 320, 179 ms)",
+      "observed": "6/6 (172, 219, 193, 305, 217, 325 ms)",
       "pass": true
     },
     {

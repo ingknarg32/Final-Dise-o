@@ -10,6 +10,11 @@ video { max-width: none !important; }
 
 /* En la vista AR el <video> de AR.js va detrás (z-index negativo): el fondo debe ser transparente */
 html.ar-active, html.ar-active body { background: transparent !important; overflow: hidden; }
+/* AR.js redimensiona <body> al tamaño del video (p. ej. 4501x3376 px). En móvil eso agranda el viewport de
+   maquetación y la interfaz fija queda fuera de pantalla. Un elemento `fixed` no añade desbordamiento de página,
+   así que se saca a body del flujo SIN tocar su tamaño: AR.js necesita body, canvas y video del mismo tamaño
+   o el 3D se deforma. */
+html.ar-active { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }   /* html (no body): el video absolute sigue midiéndose desde el origen de la ventana */
 
 /* Vista previa 3D (sin cámara): escena a pantalla completa bajo la interfaz */
 a-scene.preview-scene { position: fixed !important; inset: 0; width: 100vw; height: 100vh; z-index: 1; }

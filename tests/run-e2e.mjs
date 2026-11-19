@@ -125,7 +125,7 @@ await c.shot('01-menu');
 const minSize = async () => c.ev(`Math.round(Math.min(...[...document.querySelectorAll('button')].filter(b=>b.offsetParent!==null).map(b=>{const r=b.getBoundingClientRect();return Math.min(r.width,r.height)})))`);
 const sizes = { menu: await minSize() };
 
-const perComp = {};
+const perComp = {}, layout = {};
 for (const id of COMPS) {
   await c.ev(`document.querySelector('[data-comp=${id}]').click()`);
   const sel = await c.ev(`JSON.stringify({screen:${visibleScreens},title:document.querySelector('#select-title').textContent,concept:document.querySelector('#select-concept').textContent.length})`);
@@ -144,6 +144,8 @@ for (const id of COMPS) {
   record(`TC03-${id}`, 'FR2, NFR1', `Sesión AR de ${id}: marcador detectado y modelo anclado`, 'estado «Marcador detectado», modelo presente, cámara activa',
     `${st.status}; modelo=${st.model}; etiquetas=${st.labels}; detección en ${ms} ms`, st.screen === 'ar' && /detectado|detected/i.test(st.status) && st.model && st.videos === 1 && st.tracks === 1 && st.labels === EXPECTED_LABELS[id]);
   await c.shot(`03-ar-${id}`);
+  layout[id] = JSON.parse(await c.ev(`JSON.stringify((()=>{const m=document.querySelector('#ar-menu').getBoundingClientRect(),k=document.querySelector('#btn-rotate').getBoundingClientRect();
+    return {inner:[innerWidth,innerHeight],menuRight:Math.round(m.right),rotateBottom:Math.round(k.bottom)}})())`));
   if (id === 'cpu') sizes.ar = await minSize();
 
   if (id === 'gpu') {   // rotar / detalles se prueban sobre un componente completo
@@ -172,6 +174,12 @@ for (const id of COMPS) {
 }
 const okAll = COMPS.every(i => perComp[i].ms > 0);
 record('TC07', 'FR3', 'Cuatro sesiones AR consecutivas (3 s de pausa en el menú entre sesiones)', '4 sesiones con marcador detectado', COMPS.map(i => `${i}:${perComp[i].ms}ms`).join(' '), okAll);
+
+// TC17 · maquetación móvil: AR.js redimensiona <body> al tamaño del video; la interfaz debe seguir dentro de la ventana
+const lay = COMPS.map(i => layout[i]);
+record('TC17', 'NFR2', 'En viewport móvil (390x844) los controles de la vista AR quedan dentro de la ventana', 'ventana 390x844; Menú y Rotar visibles',
+  lay.map(l => `${l.inner.join('x')} menu→${l.menuRight} rotar↓${l.rotateBottom}`)[0] + ' (×4 componentes)',
+  lay.every(l => l.inner[0] === MOBILE.width && l.inner[1] === MOBILE.height && l.menuRight <= MOBILE.width && l.rotateBottom <= MOBILE.height));
 
 // TC16 · estabilidad: 6 sesiones seguidas con la pausa que antes provocaba el fallo de AR.js
 const stab = [];
