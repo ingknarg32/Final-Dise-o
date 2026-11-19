@@ -1,0 +1,39 @@
+PC-BUILDER AR - COMO PROBARLO EN OTRO COMPUTADOR (UNIVERSIDAD)
+================================================================
+
+1) Descomprimir el .zip completo en una carpeta (por ejemplo, el Escritorio).
+   No ejecutar desde dentro del .zip: hay que extraerlo primero.
+
+2) Doble clic en  iniciar-servidor.bat
+   - Abre el servidor en una ventana y la app en el navegador (http://localhost:8000/).
+   - No necesita internet ni instalar nada: usa Python si esta; si no, un servidor de PowerShell incluido en Windows.
+   - Usar Chrome o Edge.
+
+3) Probar con la webcam del computador:
+   - Abrir http://localhost:8000/marcador.html en OTRA pantalla (o imprimir assets/hiro.png).
+   - En la app: elegir un componente > "Iniciar AR" > aceptar la camara > apuntar al marcador.
+   - Sin webcam: usar el boton "Vista previa 3D (sin camara)".
+
+4) Probar desde el CELULAR (necesita HTTPS). Elegir UNA opcion:
+   a) iniciar-prueba-celular.bat  (necesita cloudflared + internet; muestra una URL https://....trycloudflare.com
+      que se abre en el celular; es publica mientras la ventana siga abierta).
+   b) Netlify Drop (https://app.netlify.com/drop): arrastrar la carpeta completa; da una URL https fija.
+   c) GitHub Pages: subir la carpeta a un repositorio y activar Pages.
+   En el celular: abrir la URL, elegir componente > "Iniciar AR" > aceptar camara > apuntar al marcador
+   que se muestra en el monitor del computador (marcador.html, F11, brillo alto).
+
+5) Para detener todo: cerrar las ventanas negras del servidor.
+
+SI ALGO FALLA
+- "Puerto ocupado": cerrar otros servidores o reiniciar el computador.
+- Si Windows bloquea el .bat: clic derecho > Propiedades > Desbloquear, o ejecutar desde PowerShell:
+    powershell -ExecutionPolicy Bypass -File servidor.ps1
+- No abrir index.html con doble clic (file://): la camara y el patron del marcador no funcionan asi.
+- El marcador debe verse completo, con su borde blanco, plano, sin reflejos, a 20-40 cm.
+
+CONTENIDO
+  index.html, css/, js/, lib/, data/, assets/   -> la aplicacion
+  marcador.html                                 -> marcador Hiro a pantalla completa
+  notebook/Algoritmos_Extraction_RA.ipynb       -> comparativo SIFT/SURF/ORB (subir a Google Colab)
+  informe/Informe_Guia05_PC-Builder_AR.docx     -> informe de laboratorio
+  README.md                                     -> documentacion tecnica

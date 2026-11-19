@@ -1,0 +1,61 @@
+/* PC-Builder AR - estilos propios (Tailwind aporta el resto con utilidades) */
+html, body { margin: 0; height: 100%; overflow-x: hidden; }
+body { -webkit-tap-highlight-color: transparent; }
+
+/* Tailwind (preflight) fija video{max-width:100%}: aplastaría el video que AR.js dimensiona en modo "cover" */
+video { max-width: none !important; }
+
+/* AR.js pinta su propio aviso de error; la app muestra uno traducido en la pantalla de selección */
+#error-popup { display: none !important; }
+
+/* En la vista AR el <video> de AR.js va detrás (z-index negativo): el fondo debe ser transparente */
+html.ar-active, html.ar-active body { background: transparent !important; overflow: hidden; }
+
+/* Vista previa 3D (sin cámara): escena a pantalla completa bajo la interfaz */
+a-scene.preview-scene { position: fixed !important; inset: 0; width: 100vw; height: 100vh; z-index: 1; }
+
+.screen:not(.hidden) { display: flex; }
+#screen-ar:not(.hidden) { display: block; }
+#screen-menu:not(.hidden), #screen-select:not(.hidden) { flex-direction: column; }
+
+:focus-visible { outline: 3px solid #7dd3fc; outline-offset: 2px; }
+[tabindex="-1"]:focus { outline: none; }   /* foco programático en títulos: no es un control */
+
+.chip { border: 1px solid #334155; border-radius: 9999px; padding: .2rem .7rem; color: #cbd5e1; background: #0f1a38; }
+.lang-btn { color: #cbd5e1; }
+.lang-btn[aria-pressed="true"] { background: #1d4ed8; color: #fff; }
+
+/* Botones: objetivo táctil >= 44px (WCAG 2.1 · 2.5.5) */
+.btn-primary, .btn-secondary, .btn-ghost, .btn-glass, .btn-toggle {
+  min-height: 48px; border-radius: .9rem; font-weight: 600; padding: 0 1.1rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; transition: background .15s, transform .05s;
+}
+.btn-primary { background: #1d4ed8; color: #fff; }
+.btn-primary:hover { background: #2563eb; }
+.btn-secondary { background: transparent; color: #e2e8f0; border: 1px solid #475569; }
+.btn-secondary:hover { background: #1a2a55; }
+.btn-ghost { color: #7dd3fc; min-height: 44px; padding: 0 .75rem; }
+.btn-glass { background: rgba(11,21,48,.85); color: #fff; border: 1px solid #334155; backdrop-filter: blur(6px); min-height: 44px; }
+.btn-toggle { background: #111d3d; color: #e2e8f0; border: 1px solid #334155; }
+.btn-toggle[aria-pressed="true"] { background: #1d4ed8; border-color: #3b82f6; color: #fff; }
+button:active { transform: scale(.98); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 .9rem;
+  border-radius: 9999px; background: rgba(11,21,48,.85); border: 1px solid #334155;
+  color: #fff; font-size: .85rem; font-weight: 600; backdrop-filter: blur(6px);
+}
+
+.comp-card {
+  text-align: left; padding: 1rem; border-radius: 1rem; background: #111d3d; border: 1px solid #1a2a55;
+  display: flex; flex-direction: column; gap: .5rem; min-height: 11rem; transition: border-color .15s, background .15s;
+}
+.comp-card:hover { border-color: #38bdf8; background: #14224a; }
+
+.spinner {
+  width: 1.25rem; height: 1.25rem; border-radius: 9999px;
+  border: 3px solid #334155; border-top-color: #7dd3fc; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } button:active { transform: none; } }

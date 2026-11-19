@@ -1,0 +1,293 @@
+{
+  "meta": {
+    "chrome": "Chrome/157.0.0.0",
+    "viewport": "390x844 @2x (emulación móvil)",
+    "camera": "cámara simulada con el marcador Hiro (640x480)",
+    "render": "software (SwiftShader)",
+    "date": "2026-11-19T20:48:44.425Z"
+  },
+  "summary": {
+    "total": 27,
+    "passed": 27
+  },
+  "perComponent": {
+    "cpu": {
+      "ms": 1253,
+      "screen": "ar",
+      "status": "Marcador detectado",
+      "model": true,
+      "labels": 4,
+      "videos": 1,
+      "tracks": 1,
+      "entities": 49,
+      "tris": 490
+    },
+    "ram": {
+      "ms": 183,
+      "screen": "ar",
+      "status": "Marcador detectado",
+      "model": true,
+      "labels": 4,
+      "videos": 1,
+      "tracks": 1,
+      "entities": 18,
+      "tris": 176
+    },
+    "gpu": {
+      "ms": 228,
+      "screen": "ar",
+      "status": "Marcador detectado",
+      "model": true,
+      "labels": 5,
+      "videos": 1,
+      "tracks": 1,
+      "entities": 48,
+      "tris": 5150
+    },
+    "motherboard": {
+      "ms": 177,
+      "screen": "ar",
+      "status": "Marcador detectado",
+      "model": true,
+      "labels": 7,
+      "videos": 1,
+      "tracks": 1,
+      "entities": 24,
+      "tris": 218
+    }
+  },
+  "touchTargetsPx": {
+    "menu": 44,
+    "select": 44,
+    "ar": 44
+  },
+  "origins": [
+    "http://127.0.0.1:8791"
+  ],
+  "consoleWarnings": [
+    "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostC",
+    "ArMarkerControls: 'markersAreaEnabled' is not a property of this material.",
+    "[info] Allocated videoFrameSize 1228800",
+    "[info] Pattern detection mode set to 1.",
+    "[info] Pattern ratio size set to 0.500000.",
+    "[info] Labeling mode set to 1"
+  ],
+  "results": [
+    {
+      "id": "TC01",
+      "requirement": "FR1, FR4",
+      "description": "El menú lista los 4 componentes",
+      "expected": "cpu,ram,gpu,motherboard",
+      "observed": "cpu,ram,gpu,motherboard",
+      "pass": true
+    },
+    {
+      "id": "TC02-cpu",
+      "requirement": "FR2",
+      "description": "Seleccionar cpu abre su ficha",
+      "expected": "pantalla select + título + concepto",
+      "observed": "{\"screen\":\"select\",\"title\":\"CPU\",\"concept\":103}",
+      "pass": true
+    },
+    {
+      "id": "TC03-cpu",
+      "requirement": "FR2, NFR1",
+      "description": "Sesión AR de cpu: marcador detectado y modelo anclado",
+      "expected": "estado «Marcador detectado», modelo presente, cámara activa",
+      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 1253 ms",
+      "pass": true
+    },
+    {
+      "id": "TC06-cpu",
+      "requirement": "FR3",
+      "description": "Menú desde la vista AR (cpu) libera la cámara y vuelve al menú",
+      "expected": "pantalla menu; 0 videos; 0 escenas; 0 pistas activas",
+      "observed": "{\"screen\":\"menu\",\"videos\":0,\"scenes\":0,\"tracks\":0}",
+      "pass": true
+    },
+    {
+      "id": "TC02-ram",
+      "requirement": "FR2",
+      "description": "Seleccionar ram abre su ficha",
+      "expected": "pantalla select + título + concepto",
+      "observed": "{\"screen\":\"select\",\"title\":\"RAM\",\"concept\":88}",
+      "pass": true
+    },
+    {
+      "id": "TC03-ram",
+      "requirement": "FR2, NFR1",
+      "description": "Sesión AR de ram: marcador detectado y modelo anclado",
+      "expected": "estado «Marcador detectado», modelo presente, cámara activa",
+      "observed": "Marcador detectado; modelo=true; etiquetas=4; detección en 183 ms",
+      "pass": true
+    },
+    {
+      "id": "TC06-ram",
+      "requirement": "FR3",
+      "description": "Menú desde la vista AR (ram) libera la cámara y vuelve al menú",
+      "expected": "pantalla menu; 0 videos; 0 escenas; 0 pistas activas",
+      "observed": "{\"screen\":\"menu\",\"videos\":0,\"scenes\":0,\"tracks\":0}",
+      "pass": true
+    },
+    {
+      "id": "TC02-gpu",
+      "requirement": "FR2",
+      "description": "Seleccionar gpu abre su ficha",
+      "expected": "pantalla select + título + concepto",
+      "observed": "{\"screen\":\"select\",\"title\":\"GPU\",\"concept\":74}",
+      "pass": true
+    },
+    {
+      "id": "TC03-gpu",
+      "requirement": "FR2, NFR1",
+      "description": "Sesión AR de gpu: marcador detectado y modelo anclado",
+      "expected": "estado «Marcador detectado», modelo presente, cámara activa",
+      "observed": "Marcador detectado; modelo=true; etiquetas=5; detección en 228 ms",
+      "pass": true
+    },
+    {
+      "id": "TC04",
+      "requirement": "FR2",
+      "description": "Rotar pausa y reanuda el giro",
+      "expected": "velocidad >0 → 0 → >0",
+      "observed": "0.7 → 0 → 0.7",
+      "pass": true
+    },
+    {
+      "id": "TC05",
+      "requirement": "FR2",
+      "description": "Detalles muestra/oculta etiquetas 3D y lista de partes",
+      "expected": "ON: 5 etiquetas + panel; OFF: 0 + sin panel",
+      "observed": "ON {\"vis\":5,\"panel\":true,\"items\":5,\"pressed\":\"true\"}; OFF {\"vis\":0,\"panel\":false}",
+      "pass": true
+    },
+    {
+      "id": "TC06-gpu",
+      "requirement": "FR3",
+      "description": "Menú desde la vista AR (gpu) libera la cámara y vuelve al menú",
+      "expected": "pantalla menu; 0 videos; 0 escenas; 0 pistas activas",
+      "observed": "{\"screen\":\"menu\",\"videos\":0,\"scenes\":0,\"tracks\":0}",
+      "pass": true
+    },
+    {
+      "id": "TC02-motherboard",
+      "requirement": "FR2",
+      "description": "Seleccionar motherboard abre su ficha",
+      "expected": "pantalla select + título + concepto",
+      "observed": "{\"screen\":\"select\",\"title\":\"Placa base\",\"concept\":65}",
+      "pass": true
+    },
+    {
+      "id": "TC03-motherboard",
+      "requirement": "FR2, NFR1",
+      "description": "Sesión AR de motherboard: marcador detectado y modelo anclado",
+      "expected": "estado «Marcador detectado», modelo presente, cámara activa",
+      "observed": "Marcador detectado; modelo=true; etiquetas=7; detección en 177 ms",
+      "pass": true
+    },
+    {
+      "id": "TC06-motherboard",
+      "requirement": "FR3",
+      "description": "Menú desde la vista AR (motherboard) libera la cámara y vuelve al menú",
+      "expected": "pantalla menu; 0 videos; 0 escenas; 0 pistas activas",
+      "observed": "{\"screen\":\"menu\",\"videos\":0,\"scenes\":0,\"tracks\":0}",
+      "pass": true
+    },
+    {
+      "id": "TC07",
+      "requirement": "FR3",
+      "description": "Cuatro sesiones AR consecutivas (3 s de pausa en el menú entre sesiones)",
+      "expected": "4 sesiones con marcador detectado",
+      "observed": "cpu:1253ms ram:183ms gpu:228ms motherboard:177ms",
+      "pass": true
+    },
+    {
+      "id": "TC16",
+      "requirement": "FR3",
+      "description": "Estabilidad: 6 sesiones AR seguidas con pausa de 3 s (regresión del fallo idPatt)",
+      "expected": "6/6 con marcador detectado",
+      "observed": "6/6 (201, 195, 209, 205, 320, 179 ms)",
+      "pass": true
+    },
+    {
+      "id": "TC08-cpu",
+      "requirement": "NFR1",
+      "description": "Vista previa 3D de cpu sin cámara",
+      "expected": "modelo presente, 0 videos",
+      "observed": "{\"screen\":\"ar\",\"model\":true,\"videos\":0,\"status\":\"Vista previa 3D\"}",
+      "pass": true
+    },
+    {
+      "id": "TC08-ram",
+      "requirement": "NFR1",
+      "description": "Vista previa 3D de ram sin cámara",
+      "expected": "modelo presente, 0 videos",
+      "observed": "{\"screen\":\"ar\",\"model\":true,\"videos\":0,\"status\":\"Vista previa 3D\"}",
+      "pass": true
+    },
+    {
+      "id": "TC08-gpu",
+      "requirement": "NFR1",
+      "description": "Vista previa 3D de gpu sin cámara",
+      "expected": "modelo presente, 0 videos",
+      "observed": "{\"screen\":\"ar\",\"model\":true,\"videos\":0,\"status\":\"Vista previa 3D\"}",
+      "pass": true
+    },
+    {
+      "id": "TC08-motherboard",
+      "requirement": "NFR1",
+      "description": "Vista previa 3D de motherboard sin cámara",
+      "expected": "modelo presente, 0 videos",
+      "observed": "{\"screen\":\"ar\",\"model\":true,\"videos\":0,\"status\":\"Vista previa 3D\"}",
+      "pass": true
+    },
+    {
+      "id": "TC09",
+      "requirement": "NFR3",
+      "description": "Cambio de idioma ES→EN actualiza la interfaz",
+      "expected": "lang=en, «Select a component», «Motherboard»",
+      "observed": "{\"lang\":\"en\",\"pick\":\"Select a component\",\"mb\":\"Motherboard\"}",
+      "pass": true
+    },
+    {
+      "id": "TC13",
+      "requirement": "NFR3",
+      "description": "Todos los botones visibles miden ≥ 44 px (WCAG 2.5.5)",
+      "expected": "≥ 44 px",
+      "observed": "{\"menu\":44,\"select\":44,\"ar\":44} px",
+      "pass": true
+    },
+    {
+      "id": "TC14",
+      "requirement": "NFR1",
+      "description": "Enlace directo #gpu+preview abre la vista previa de la GPU",
+      "expected": "ar, GPU, modelo",
+      "observed": "{\"screen\":\"ar\",\"title\":\"GPU\",\"model\":true}",
+      "pass": true
+    },
+    {
+      "id": "TC11",
+      "requirement": "NFR1",
+      "description": "Ninguna petición a servidores externos durante toda la sesión",
+      "expected": "solo http://127.0.0.1:8791",
+      "observed": "http://127.0.0.1:8791",
+      "pass": true
+    },
+    {
+      "id": "TC12",
+      "requirement": "NFR3",
+      "description": "Sin errores de JavaScript ni de consola",
+      "expected": "0 errores",
+      "observed": "0 errores",
+      "pass": true
+    },
+    {
+      "id": "TC10",
+      "requirement": "NFR3",
+      "description": "Sin cámara/permiso la app vuelve a la ficha con un mensaje claro",
+      "expected": "getUserMedia=NotAllowedError; pantalla select + mensaje; sin escena",
+      "observed": "{\"screen\":\"select\",\"msg\":\"No se concedió acceso a la cámara. Actívalo en los permisos del navegador o usa la vista previa 3D.\",\"videos\":0,\"scenes\":0}",
+      "pass": true
+    }
+  ]
+}

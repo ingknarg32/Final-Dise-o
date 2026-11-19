@@ -1,0 +1,7 @@
+* text=auto
+*.hiro binary
+*.dat binary
+*.png binary
+*.docx binary
+lib/** -text
+*.bat text eol=crlf
