@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>PC-Builder AR: validación funcional y escalabilidad</title>
+<style>
+  @page { size: Letter; margin: 0.75in 0.625in 0.9in 0.625in; }
+  * { box-sizing: border-box; }
+  html { font-family: "Times New Roman", Times, serif; font-size: 10pt; color: #000; }
+  body { counter-reset: sec; margin: 0; line-height: 1.22; text-align: justify; hyphens: auto; }
+  .title { text-align: center; margin: 0 0 8pt; }
+  .title h1.main { font-size: 22pt; font-weight: normal; line-height: 1.1; margin: 0 0 10pt; text-transform: none; text-align: center; counter-increment: none; letter-spacing: 0; }
+  .title h1.main::before { content: none; }
+  .authors { display: flex; justify-content: center; gap: 36pt; font-size: 10.5pt; }
+  .authors div { text-align: center; }
+  .authors .nm { font-size: 11pt; }
+  .authors .af { font-style: italic; font-size: 9pt; }
+  .cols { column-count: 2; column-gap: 0.25in; margin-top: 10pt; }
+  .abs { font-weight: bold; font-size: 9pt; line-height: 1.2; margin: 0 0 4pt; }
+  .abs i { font-style: italic; }
+  h1 { font-size: 10pt; font-weight: normal; text-transform: uppercase; text-align: center; margin: 11pt 0 4pt; counter-increment: sec; counter-set: sub 0; break-after: avoid; letter-spacing: .02em; }
+  h1::before { content: counter(sec, upper-roman) ". "; }
+  h1.nonum { counter-increment: none; } h1.nonum::before { content: ""; }
+  h2 { font-size: 10pt; font-weight: normal; font-style: italic; text-align: left; margin: 7pt 0 2pt; counter-increment: sub; break-after: avoid; }
+  h2::before { content: counter(sub, upper-alpha) ". "; }
+  p { margin: 0 0 5pt; text-indent: 0.17in; }
+  p.ni, li p { text-indent: 0; } h1.nonum + p.ni { text-align: left; }
+  ul, ol { margin: 0 0 5pt; padding-left: 0.2in; } li { margin-bottom: 1.5pt; }
+  .wide { column-span: all; margin: 6pt 0; }
+  figure { margin: 5pt 0 7pt; break-inside: avoid; text-align: center; }
+  figcaption { font-size: 8pt; text-align: justify; margin-top: 3pt; }
+  figcaption b { font-weight: normal; } figure.wide figcaption { text-align: center; }
+  .shots { display: flex; justify-content: center; gap: 5pt; }
+  .shots figure { margin: 0; flex: 1 1 0; } .shots img { width: 100%; border: 0.5pt solid #888; display: block; }
+  .shots .lb { font-size: 7.5pt; margin-top: 1.5pt; }
+  table { width: 100%; border-collapse: collapse; font-size: 8pt; line-height: 1.15; margin: 4pt 0 8pt; text-align: left; }
+  caption { caption-side: top; font-size: 8pt; text-transform: uppercase; text-align: center; padding-bottom: 3pt; line-height: 1.2; }
+  caption .t { display: block; }
+  th, td { border-top: 0.5pt solid #000; border-bottom: 0.5pt solid #000; padding: 1.8pt 3pt; vertical-align: top; }
+  th { font-weight: bold; text-align: left; } td.c, th.c { text-align: center; }
+  tr + tr td { border-top: 0.25pt solid #999; }
+  .ok { font-weight: bold; }
+  table.avoid, .avoid { break-inside: avoid; }
+  .small { font-size: 8pt; }
+  .refs { font-size: 8pt; text-align: left; } .refs li { margin-bottom: 2pt; }
+  code { font-family: "Courier New", monospace; font-size: 8.5pt; }
+</style>
+</head>
+<body>
+
+<div class="title">
+  <h1 class="main">PC-Builder AR: validación funcional y análisis de escalabilidad de una aplicación web de realidad aumentada para aprender Arquitectura de Computadores</h1>
+  <div class="authors">
+    <div><div class="nm">Cristhian Felipe Ortiz Montero</div><div class="af">[Programa], [Universidad], [Ciudad, País]</div></div>
+    <div><div class="nm">Brandon Felipe Rincon Paez</div><div class="af">[Programa], [Universidad], [Ciudad, País]</div></div>
+  </div>
+</div>
+
+<div class="cols">
+
+<p class="abs ni"><i>Resumen</i>—PC-Builder AR es una aplicación web de realidad aumentada (RA) que permite explorar en 3D una CPU, una memoria RAM, una GPU y una placa base desde el navegador del celular, sin instalar nada, mediante un menú interactivo. Este documento (i) cataloga las funcionalidades del sistema, (ii) presenta evidencia de funcionamiento obtenida con una suite de 28 pruebas automatizadas de extremo a extremo (28/28 aprobadas) que ejercita la aplicación con una cámara simulada que muestra el marcador Hiro, (iii) reporta tres defectos reales que esas pruebas permitieron encontrar y corregir y (iv) argumenta, con medidas del propio proyecto, por qué conviene escalarlo por etapas. Las pruebas no sustituyen la validación en celulares físicos ni un estudio con estudiantes, que son los siguientes pasos.</p>
+<p class="abs ni"><i>Abstract</i>—PC-Builder AR is a web-based augmented reality (AR) application that lets learners explore a CPU, RAM, GPU and motherboard in 3D from a mobile browser, with no installation, through an interactive menu. This paper (i) catalogs the system's functions, (ii) provides evidence of operation from 28 automated end-to-end tests (28/28 passed) using a simulated camera showing the Hiro marker, (iii) reports three real defects found and fixed thanks to those tests, and (iv) argues, with project measurements, why the system deserves staged scaling. The tests do not replace validation on physical phones or a study with students, which are the next steps.</p>
+<p class="abs ni"><i>Palabras clave / Index Terms</i>—Realidad aumentada, AR.js, A-Frame, Arquitectura de Computadores, pruebas end-to-end, usabilidad, aprendizaje autónomo.</p>
+
+<h1>Introducción</h1>
+<p>La Arquitectura de Computadores se enseña con figuras de libro y diapositivas que muestran el hardware como imágenes planas y aisladas: el estudiante no percibe tamaño, posición ni relaciones entre CPU, memoria, tarjeta gráfica y placa base, y menos aún si no tiene hardware a la mano. La RA superpone contenido virtual al mundo real en tiempo real [1] y se asocia en educación con mejor comprensión espacial y mayor motivación, aunque su adopción se frena por complejidad técnica y problemas de usabilidad [2], [3]. Una barrera práctica adicional es que muchas soluciones exigen aplicaciones nativas o dispositivos específicos.</p>
+<p>PC-Builder AR responde a ese problema con RA <i>en el navegador</i>: AR.js [4] para seguimiento, A-Frame [5] para la escena 3D y Tailwind CSS [6] para una interfaz móvil. El diseño de la interfaz se contrastó con las heurísticas de Nielsen [7] y con WCAG 2.1 [9]; el desarrollo siguió un enfoque ágil integrado con la investigación de diseño y desarrollo (DDR) [11], [12], tal como se describe en el artículo base del proyecto.</p>
+<p>Este documento extiende ese artículo con lo que allí quedó como trabajo futuro: evidencia reproducible de funcionamiento y una justificación cuantificada de escalado. Las contribuciones son: un catálogo de funcionalidades trazado a requisitos y pruebas (Sección II); una suite E2E reproducible y sus resultados (Secciones IV y V); un análisis de tres defectos encontrados por la suite (Sección V-C); y un caso de escalado con hoja de ruta, criterios de decisión y riesgos (Sección VI).</p>
+
+<h1>Funcionalidades del sistema</h1>
+<p>La aplicación expone catorce funciones agrupadas en tres pantallas: <i>Menú</i>, <i>Componente seleccionado</i> y <i>Vista AR</i>. La Tabla I las relaciona con los requisitos del artículo (FR1–FR4, NFR1–NFR3) y con los casos de prueba que las verifican.</p>
+
+<table>
+<caption><span class="t">Tabla I</span><span class="t">Funcionalidades y su verificación</span></caption>
+<tr><th>ID</th><th>Funcionalidad</th><th>Req.</th><th>Prueba</th></tr>
+<tr><td>F01</td><td>Menú con los 4 componentes (CPU, RAM, GPU, placa base)</td><td>FR1, FR4</td><td>TC01</td></tr>
+<tr><td>F02</td><td>Ficha por componente: concepto de Arquitectura de Computadores, descripción y tres hechos clave</td><td>FR2</td><td>TC02</td></tr>
+<tr><td>F03</td><td>«Iniciar AR» con aviso previo de por qué se usa la cámara</td><td>NFR3</td><td>TC03, TC10</td></tr>
+<tr><td>F04</td><td>Detección del marcador Hiro y anclaje del modelo 3D sobre él</td><td>FR2</td><td>TC03</td></tr>
+<tr><td>F05</td><td>Indicador de estado: «Apunta al marcador» / «Marcador detectado»</td><td>NFR3</td><td>TC03</td></tr>
+<tr><td>F06</td><td>Rotar: giro automático activable y pausable</td><td>FR2</td><td>TC04</td></tr>
+<tr><td>F07</td><td>Detalles: etiquetas 3D y lista de partes (4 a 7 por componente)</td><td>FR2</td><td>TC05</td></tr>
+<tr><td>F08</td><td>Volver al menú en cualquier momento, liberando la cámara</td><td>FR3</td><td>TC06, TC07, TC16</td></tr>
+<tr><td>F09</td><td>Vista previa 3D sin cámara (arrastrar para girar, zoom)</td><td>NFR1</td><td>TC08</td></tr>
+<tr><td>F10</td><td>Interfaz bilingüe español/inglés</td><td>NFR3</td><td>TC09</td></tr>
+<tr><td>F11</td><td>Mensajes claros ante cámara denegada o no disponible</td><td>NFR3</td><td>TC10</td></tr>
+<tr><td>F12</td><td>Diseño <i>mobile-first</i>, botones ≥ 44 px, controles dentro de la ventana</td><td>NFR2, NFR3</td><td>TC13, TC17</td></tr>
+<tr><td>F13</td><td>Sin servidores externos; paquete portátil y servidor local</td><td>NFR1</td><td>TC11, TC12</td></tr>
+<tr><td>F14</td><td>Enlaces directos a un componente o a su vista previa</td><td>NFR1</td><td>TC14</td></tr>
+</table>
+
+<h2>Flujo de interacción</h2>
+<p>El usuario nuevo llega a la vista AR en dos toques: elegir el componente y pulsar «Iniciar AR» (más la aceptación de la cámara). En la vista AR solo se muestran los controles esenciales—estado del marcador, Menú, Rotar y Detalles—, en línea con el principio de diseño minimalista [7]. La Fig. 1 resume los estados; las Figs. 3 y 4 muestran las pantallas.</p>
+
+<figure>
+<svg viewBox="0 0 330 172" width="100%" font-family="Times New Roman, serif" font-size="9">
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#000"/></marker></defs>
+  <g fill="#fff" stroke="#000" stroke-width="1">
+    <rect x="4" y="52" width="70" height="34" rx="4"/><rect x="130" y="52" width="70" height="34" rx="4"/>
+    <rect x="256" y="52" width="70" height="34" rx="4"/><rect x="130" y="132" width="70" height="34" rx="4"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="39" y="67" font-weight="bold">Menú</text><text x="39" y="79" font-size="7.5">4 componentes</text>
+    <text x="165" y="67" font-weight="bold">Componente</text><text x="165" y="79" font-size="7.5">ficha + aviso cámara</text>
+    <text x="291" y="67" font-weight="bold">Vista AR</text><text x="291" y="79" font-size="7.5">marcador + 3D</text>
+    <text x="165" y="147" font-weight="bold">Vista previa 3D</text><text x="165" y="159" font-size="7.5">sin cámara</text>
+  </g>
+  <g stroke="#000" fill="none" stroke-width="1" marker-end="url(#a)">
+    <path d="M74,69 L130,69"/><path d="M200,69 L256,69"/><path d="M165,86 L165,132"/>
+  </g>
+  <g stroke="#000" fill="none" stroke-width="0.8" stroke-dasharray="3 2" marker-end="url(#a)">
+    <path d="M140,86 C132,112 52,112 46,88"/><path d="M276,86 C268,112 196,112 190,88"/><path d="M300,52 C300,4 30,4 30,50"/>
+  </g>
+  <g font-size="7.5" text-anchor="middle">
+    <text x="102" y="64">toque</text><text x="228" y="64">Iniciar AR</text>
+    <text x="172" y="112" text-anchor="start">Vista previa</text>
+    <text x="92" y="116">volver</text><text x="234" y="116">error de cámara</text>
+    <text x="165" y="32">Menú (recarga limpia)</text>
+  </g>
+</svg>
+<figcaption><b>Fig. 1.</b> Estados de la aplicación. Línea continua: acción del usuario; discontinua: retorno. Desde la vista previa, «Menú» también vuelve al inicio. Tras una sesión AR, «Menú» y los errores de cámara recargan la página (Sección V-C).</figcaption>
+</figure>
+
+<h1>Arquitectura y diseño</h1>
+<h2>Tres capas desacopladas</h2>
+<p>La aplicación es una página estática con tres capas (Fig. 2): la capa 2D (Tailwind CSS) renderiza menú, fichas y controles; la capa 3D (A-Frame) construye los modelos; y la capa AR (AR.js) accede a la cámara y sigue el marcador mediante el enfoque de ARToolKit [10]. Agregar un componente exige una función constructora 3D, una entrada de contenido y un identificador en el menú; no toca el seguimiento.</p>
+<figure>
+<svg viewBox="0 0 330 150" width="100%" font-family="Times New Roman, serif" font-size="9">
+  <defs><marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="#000"/></marker></defs>
+  <rect x="4" y="4" width="226" height="142" rx="8" fill="none" stroke="#000" stroke-width="1.2"/>
+  <text x="12" y="16" font-style="italic" font-size="8">Navegador móvil (sin instalación)</text>
+  <g stroke="#000" fill="#fff"><rect x="14" y="24" width="206" height="30" rx="3"/><rect x="14" y="64" width="206" height="30" rx="3"/><rect x="14" y="104" width="206" height="30" rx="3"/></g>
+  <g text-anchor="middle"><text x="117" y="38" font-weight="bold">Capa 2D · Tailwind CSS</text><text x="117" y="49" font-size="7.5">menú, fichas, estados, controles</text>
+  <text x="117" y="78" font-weight="bold">Capa 3D · A-Frame</text><text x="117" y="89" font-size="7.5">CPU · RAM · GPU · placa base</text>
+  <text x="117" y="118" font-weight="bold">Capa AR · AR.js</text><text x="117" y="129" font-size="7.5">cámara + seguimiento del marcador Hiro</text></g>
+  <g stroke="#000" fill="none" marker-start="url(#b)" marker-end="url(#b)"><path d="M117,54 L117,64"/><path d="M117,94 L117,104"/></g>
+  <rect x="246" y="30" width="80" height="86" rx="4" fill="#fff" stroke="#000"/>
+  <g text-anchor="middle" font-size="8"><text x="286" y="48" font-weight="bold">Archivos</text><text x="286" y="59" font-weight="bold">estáticos</text><text x="286" y="75">HTML · CSS · JS</text><text x="286" y="86">libs fijadas</text><text x="286" y="97">patrón Hiro</text><text x="286" y="108">sin back-end</text></g>
+  <path d="M230,73 L246,73" stroke="#000" fill="none" marker-end="url(#b)"/>
+</svg>
+<figcaption><b>Fig. 2.</b> Arquitectura en capas y entrega como archivos estáticos.</figcaption>
+</figure>
+
+<h2>Decisiones técnicas</h2>
+<ul>
+<li><b>Modelos con primitivas.</b> Los cuatro componentes se construyen con cajas y cilindros de A-Frame, sin archivos externos: carga instantánea, funcionamiento sin red y geometría liviana (Tabla IV).</li>
+<li><b>Etiquetas en <i>canvas</i>.</b> El texto 3D se dibuja en un canvas y se usa como textura; no depende de fuentes remotas.</li>
+<li><b>Dependencias fijadas y locales.</b> A-Frame 1.3.0, AR.js 3.4.5 y Tailwind 3.4.1 se incluyen en el repositorio junto con los parámetros de cámara y el patrón Hiro; de lo contrario AR.js los pide en tiempo de ejecución a un servidor externo.</li>
+<li><b>Privacidad por diseño.</b> La pantalla previa explica el uso de la cámara; el video se procesa en el dispositivo y las pistas se detienen al volver al menú o cerrar la página.</li>
+<li><b>Heurísticas y accesibilidad.</b> Estado visible, control y libertad del usuario, consistencia, reconocimiento antes que recuerdo y minimalismo [7]; objetivos táctiles ≥ 44 px, foco visible, <code>aria-pressed</code> y <code>role="status"</code> [9].</li>
+</ul>
+
+<h1>Metodología de pruebas</h1>
+<h2>Suite E2E reproducible</h2>
+<p>El archivo <code>tests/run-e2e.mjs</code> del repositorio automatiza Chrome mediante el protocolo DevTools, sin dependencias externas. La suite: (1) sirve el proyecto por HTTP; (2) genera un video con el marcador Hiro y lo entrega al navegador como cámara; (3) recorre la aplicación en un viewport móvil emulado; y (4) guarda resultados (<code>results.json</code>) y capturas. Cada caso declara su requisito, lo esperado y lo observado.</p>
+
+<table class="avoid">
+<caption><span class="t">Tabla II</span><span class="t">Entorno de pruebas</span></caption>
+<tr><td>Navegador</td><td>Chrome 157 (headless)</td></tr>
+<tr><td>Viewport</td><td>390×844 px, factor 2×, emulación móvil</td></tr>
+<tr><td>Cámara</td><td>Simulada: marcador Hiro en un cuadro de 640×480</td></tr>
+<tr><td>Render 3D</td><td>Por software (SwiftShader), sin GPU</td></tr>
+<tr><td>Datos</td><td>Servidor HTTP local; sin red externa</td></tr>
+</table>
+
+<h2>Alcance de las pruebas</h2>
+<p>La evidencia es funcional: verifica que cada acción produce el estado esperado. No mide rendimiento en teléfonos reales (el render es por software), ni calidad de seguimiento con luz, ángulos y cámaras reales, ni aprendizaje. Esas limitaciones se discuten en la Sección VII.</p>
+
+</div><!-- /cols (se reabre tras las figuras anchas) -->
+
+<figure class="wide">
+  <div class="shots">
+    <figure><img src="../tests/results/03-ar-cpu.png" alt="CPU anclada"><div class="lb">CPU</div></figure>
+    <figure><img src="../tests/results/03-ar-ram.png" alt="RAM anclada"><div class="lb">RAM</div></figure>
+    <figure><img src="../tests/results/03-ar-gpu.png" alt="GPU anclada"><div class="lb">GPU</div></figure>
+    <figure><img src="../tests/results/03-ar-motherboard.png" alt="Placa base anclada"><div class="lb">Placa base</div></figure>
+  </div>
+  <figcaption><b>Fig. 3.</b> Vista AR de los cuatro componentes con el marcador Hiro detectado («Marcador detectado», verde) y el modelo 3D anclado sobre él. Capturas de la suite E2E (390×844, cámara simulada).</figcaption>
+</figure>
+
+<div class="cols">
+
+<h1>Resultados</h1>
+<h2>Resultados de las pruebas</h2>
+<p>Las 28 pruebas pasaron (Tabla III). Los tiempos de detección miden desde el toque en «Iniciar AR» hasta «Marcador detectado» en el entorno de la Tabla II; el primero incluye el arranque en frío del motor de seguimiento.</p>
+</div>
+
+<table class="wide">
+<caption><span class="t">Tabla III</span><span class="t">Resultados de la suite E2E (28 casos, agrupados por función)</span></caption>
+<tr><th>Prueba</th><th>Qué se verifica</th><th>Resultado observado</th><th class="c">Estado</th></tr>
+<tr><td>TC01</td><td>El menú lista los componentes</td><td>cpu, ram, gpu, motherboard</td><td class="c ok">PASS</td></tr>
+<tr><td>TC02 ×4</td><td>Seleccionar un componente abre su ficha con título y concepto</td><td>4/4 fichas correctas</td><td class="c ok">PASS</td></tr>
+<tr><td>TC03 ×4</td><td>Sesión AR: marcador detectado, modelo anclado, cámara activa, etiquetas esperadas</td><td>4/4; etiquetas 4/4/5/7; detección 1197/185/240/209 ms</td><td class="c ok">PASS</td></tr>
+<tr><td>TC04</td><td>Rotar pausa y reanuda el giro</td><td>0,7 → 0 → 0,7 rad/s</td><td class="c ok">PASS</td></tr>
+<tr><td>TC05</td><td>Detalles muestra/oculta etiquetas 3D y lista de partes</td><td>ON: 5 etiquetas + panel con 5 ítems; OFF: 0 y sin panel</td><td class="c ok">PASS</td></tr>
+<tr><td>TC06 ×4</td><td>«Menú» desde la vista AR libera la cámara y vuelve al menú</td><td>0 videos, 0 escenas, 0 pistas activas (4/4)</td><td class="c ok">PASS</td></tr>
+<tr><td>TC07</td><td>Cuatro sesiones AR seguidas con 3 s de pausa en el menú</td><td>4/4 con marcador detectado</td><td class="c ok">PASS</td></tr>
+<tr><td>TC08 ×4</td><td>Vista previa 3D funciona sin cámara</td><td>modelo presente; 0 elementos de video (4/4)</td><td class="c ok">PASS</td></tr>
+<tr><td>TC09</td><td>Cambio ES→EN actualiza la interfaz</td><td>«Select a component», «Motherboard»</td><td class="c ok">PASS</td></tr>
+<tr><td>TC10</td><td>Sin cámara/permiso: vuelve a la ficha con mensaje claro y sin escena</td><td>mensaje «No se concedió acceso a la cámara…»</td><td class="c ok">PASS</td></tr>
+<tr><td>TC11</td><td>Ninguna petición a servidores externos en toda la sesión</td><td>solo el origen local</td><td class="c ok">PASS</td></tr>
+<tr><td>TC12</td><td>Sin errores de JavaScript ni de consola</td><td>0 errores</td><td class="c ok">PASS</td></tr>
+<tr><td>TC13</td><td>Todos los botones visibles miden ≥ 44 px</td><td>menú 44 · ficha 44 · AR 44 px</td><td class="c ok">PASS</td></tr>
+<tr><td>TC14</td><td>Enlace directo <code>#gpu+preview</code> abre la vista previa de la GPU</td><td>vista previa, título «GPU»</td><td class="c ok">PASS</td></tr>
+<tr><td>TC16</td><td>Estabilidad: 6 sesiones AR seguidas con pausa de 3 s</td><td>6/6 (172–325 ms)</td><td class="c ok">PASS</td></tr>
+<tr><td>TC17</td><td>En 390×844 los controles de la vista AR quedan dentro de la ventana</td><td>Menú y Rotar visibles en los 4 componentes</td><td class="c ok">PASS</td></tr>
+</table>
+
+<div class="cols">
+
+<h2>Medidas del sistema</h2>
+<p>La Tabla IV reúne medidas objetivas de los modelos y del código. Los triángulos se contaron recorriendo la geometría de cada escena; las líneas, de la función constructora de cada componente. El código propio completo (HTML, CSS y JavaScript) suma 935 líneas (≈ 52 KB); las bibliotecas fijadas ocupan ≈ 3,9 MB y todo el paquete comprimido, 1,5 MB.</p>
+
+<table class="avoid">
+<caption><span class="t">Tabla IV</span><span class="t">Medidas por componente</span></caption>
+<tr><th>Componente</th><th class="c">Entidades</th><th class="c">Triángulos</th><th class="c">Partes</th><th class="c">Líneas</th></tr>
+<tr><td>CPU</td><td class="c">49</td><td class="c">490</td><td class="c">4</td><td class="c">27</td></tr>
+<tr><td>RAM</td><td class="c">18</td><td class="c">176</td><td class="c">4</td><td class="c">22</td></tr>
+<tr><td>GPU</td><td class="c">48</td><td class="c">5 150</td><td class="c">5</td><td class="c">33</td></tr>
+<tr><td>Placa base</td><td class="c">24</td><td class="c">218</td><td class="c">7</td><td class="c">32</td></tr>
+</table>
+
+<h2>Defectos hallados y corregidos</h2>
+<p>La suite no solo confirmó el funcionamiento: reveló tres defectos que una revisión manual no había detectado (Tabla V). Que aparecieran en una sola sesión de pruebas justifica mantener la suite como puerta de calidad en cada cambio.</p>
+<table class="avoid">
+<caption><span class="t">Tabla V</span><span class="t">Defectos encontrados por las pruebas</span></caption>
+<tr><th>#</th><th>Hallazgo</th><th>Corrección</th></tr>
+<tr><td>D1</td><td>La «vista previa sin cámara» abría la cámara y pedía un archivo a un servidor externo: AR.js inicia su sistema en <i>toda</i> escena A-Frame (TC08: 1 video; TC11: origen extra).</td><td>Se protege el sistema de AR.js para que solo actúe si la escena declara <code>arjs</code>. Ahora 0 videos y 0 orígenes externos.</td></tr>
+<tr><td>D2</td><td>Una segunda sesión AR en la misma página fallaba de forma intermitente tras una pausa (<code>TypeError … idPatt</code>): con pausa de 0,7 s 6/6 sesiones bien, con 3 s fallaron 3 de 6.</td><td>Tras una sesión AR, «Menú» y los errores de cámara recargan la página (la cámara se libera antes). TC16: 6/6.</td></tr>
+<tr><td>D3</td><td>En móvil, AR.js ensanchaba <code>&lt;body&gt;</code> a 4501×3376 px y el viewport de maquetación pasaba a 1560×3376: Menú y tarjeta quedaban fuera de pantalla.</td><td>Se fija <code>html</code> sin alterar el tamaño de <code>body</code> (AR.js lo necesita igual al del video). TC17.</td></tr>
+</table>
+<p>También se corrigieron detalles menores: botones de idioma de 36 px (ahora ≥ 44 px), solicitud de <i>favicon</i> inexistente y enlaces directos que no reaccionaban al cambiar el <i>hash</i>. D3 solo se hizo visible con emulación móvil de 390 px, no con una ventana de escritorio: es un ejemplo concreto de por qué hay que repetir la validación en dispositivos físicos.</p>
+</div>
+
+<figure class="wide">
+  <div class="shots">
+    <figure><img src="../tests/results/01-menu.png" alt="Menú"><div class="lb">(a) Menú</div></figure>
+    <figure><img src="../tests/results/02-select.png" alt="Ficha"><div class="lb">(b) Ficha CPU</div></figure>
+    <figure><img src="../tests/results/04-ar-gpu-details.png" alt="Detalles GPU"><div class="lb">(c) Detalles GPU</div></figure>
+    <figure><img src="../tests/results/05-preview-ram.png" alt="Vista previa RAM"><div class="lb">(d) Vista previa</div></figure>
+    <figure><img src="../tests/results/06-menu-en.png" alt="Menú en inglés"><div class="lb">(e) Inglés</div></figure>
+    <figure><img src="../tests/results/07-camera-error.png" alt="Error de cámara"><div class="lb">(f) Cámara denegada</div></figure>
+  </div>
+  <figcaption><b>Fig. 4.</b> Estados de la interfaz verificados: menú (TC01), ficha (TC02), Detalles con etiquetas 3D y lista de partes (TC05), vista previa sin cámara (TC08), idioma inglés (TC09) y manejo de cámara denegada (TC10).</figcaption>
+</figure>
+
+<div class="cols">
+
+<h1>Por qué vale la pena escalarlo</h1>
+<h2>Necesidad y ajuste pedagógico</h2>
+<p>La necesidad es concreta: la representación plana del hardware dificulta construir un modelo mental del computador, y la RA ofrece justamente visión espacial, interacción dirigida por el estudiante y aprendizaje autónomo [2], [3]. El diseño sigue el principio de que se aprende mejor con palabras e imágenes que con palabras solas [8]: cada modelo 3D va acompañado de un concepto, una descripción y etiquetas por parte. Además, la herramienta es útil <i>fuera del aula</i> y para quien no tiene acceso a hardware físico.</p>
+
+<h2>Evidencia técnica que respalda el escalado</h2>
+<ul>
+<li><b>Barrera de entrada casi nula.</b> Corre en el navegador del celular; el paquete completo pesa 1,5 MB; no hace peticiones a terceros (TC11) y se distribuye con un enlace. Se puede alojar como archivos estáticos, sin servidor propio.</li>
+<li><b>Costo marginal bajo por contenido.</b> Un componente nuevo requirió entre 22 y 33 líneas de código 3D (Tabla IV) más su texto en dos idiomas. Pasar de 4 a <i>N</i> componentes crece de forma lineal y localizada, gracias a las capas desacopladas (Fig. 2).</li>
+<li><b>Geometría liviana.</b> Entre 176 y 5 150 triángulos por modelo, lejos de cargas que comprometan un teléfono de gama media (a confirmar en dispositivos reales).</li>
+<li><b>Calidad verificable.</b> 28 pruebas automatizadas reproducibles; en una sola sesión revelaron tres defectos reales (Tabla V). Con esta red de seguridad, ampliar contenido y funciones es menos riesgoso.</li>
+<li><b>Accesibilidad y alcance lingüístico desde el diseño.</b> Controles táctiles ≥ 44 px, foco visible, atributos ARIA y español/inglés (TC09, TC13) facilitan usarlo con públicos distintos.</li>
+<li><b>Privacidad.</b> El video no sale del dispositivo ni se almacena; la cámara se libera al salir (TC06). Esto simplifica el uso en instituciones educativas.</li>
+</ul>
+
+<table class="avoid">
+<caption><span class="t">Tabla VI</span><span class="t">Comparación cualitativa de enfoques</span></caption>
+<tr><th></th><th>Diagramas estáticos</th><th>App nativa de RA</th><th>PC-Builder AR</th></tr>
+<tr><td>Instalación</td><td>Ninguna</td><td>Tienda de apps</td><td>Ninguna (enlace)</td></tr>
+<tr><td>Vista espacial 3D</td><td>No</td><td>Sí</td><td>Sí</td></tr>
+<tr><td>Actualizar contenido</td><td>Reeditar material</td><td>Nueva versión por plataforma</td><td>Publicar archivos</td></tr>
+<tr><td>Interacción del estudiante</td><td>Baja</td><td>Alta</td><td>Alta (menú, rotar, detalles)</td></tr>
+<tr><td>Uso sin hardware físico</td><td>Sí</td><td>Sí</td><td>Sí</td></tr>
+</table>
+
+<h2>Contexto de mercado</h2>
+<p>Las diapositivas del curso reproducen una estimación de Emergen Research según la cual el mercado conjunto de RA y RV pasaría de 21,40 mil millones de dólares en 2021 a 237,80 mil millones en 2030, con una tasa de crecimiento anual compuesta de 35 % [13]. Se cita como indicio del interés del sector, no como cifra verificada por los autores; la decisión de escalar no depende de ella.</p>
+
+<h2>Hoja de ruta con compuertas de decisión</h2>
+<p>Se propone escalar por etapas, avanzando solo si se cumple el criterio de cada una (Tabla VII). El criterio de usabilidad usa la escala SUS [14] con 68 puntos como referencia de promedio ampliamente usada.</p>
+
+<table class="avoid">
+<caption><span class="t">Tabla VII</span><span class="t">Etapas, entregables y criterios de avance</span></caption>
+<tr><th>Etapa</th><th>Entregables</th><th>Criterio de avance</th></tr>
+<tr><td>0. Validar</td><td>Matriz de dispositivos reales (Android/iOS, gama media/alta); capturas de evidencia; ajuste de iluminación y tamaño del marcador</td><td>Marcador detectado y modelo estable en ≥ 90 % de los intentos por dispositivo</td></tr>
+<tr><td>1. Piloto</td><td>Estudio con un grupo de Arquitectura de Computadores: SUS, tareas guiadas, prueba de conocimiento previa y posterior frente a material estático</td><td>SUS ≥ 68; ganancia de aprendizaje no inferior al grupo de control</td></tr>
+<tr><td>2. Contenido</td><td>Almacenamiento, fuente y refrigeración; «armar el PC» con reglas de compatibilidad (socket, RAM, ranura PCIe); cuestionarios; modelos glTF fieles</td><td>Revisión de exactitud por docentes; tareas de ensamblaje resueltas por ≥ 80 % del piloto</td></tr>
+<tr><td>3. Plataforma</td><td>Compilar Tailwind; modo sin conexión (PWA); integración con LMS y panel docente; reutilizar el motor en otras asignaturas (redes, sistemas operativos)</td><td>Adopción por ≥ 2 cursos; mantenimiento con la suite E2E en verde</td></tr>
+</table>
+
+<h2>Riesgos y mitigación</h2>
+<ul>
+<li><b>Dependencia de AR.js.</b> D2 y D3 muestran que la biblioteca exige cuidados. Mitigación: la capa AR está aislada (Fig. 2) y probada; se evaluarán alternativas (por ejemplo, seguimiento sin marcador donde el navegador lo permita) sin reescribir menú ni modelos.</li>
+<li><b>Fragmentación de dispositivos y de condiciones de luz.</b> Mitigación: matriz de dispositivos en la Etapa 0 y guía de uso del marcador.</li>
+<li><b>Exactitud del contenido.</b> Los modelos actuales son esquemáticos. Mitigación: revisión docente y modelos fieles en la Etapa 2.</li>
+<li><b>Efecto pedagógico aún no medido.</b> Mitigación: el piloto de la Etapa 1 es una compuerta explícita antes de invertir en contenido masivo.</li>
+<li><b>Mantenimiento.</b> Tailwind se carga en modo de desarrollo; se compilará en la Etapa 3.</li>
+</ul>
+
+<h1>Limitaciones y amenazas a la validez</h1>
+<ul>
+<li><b>Cámara simulada.</b> El marcador se presenta en un cuadro fijo y limpio; la cámara real aporta ruido, movimiento, reflejos y oclusiones.</li>
+<li><b>Render por software.</b> Los tiempos de detección de la Tabla III no son representativos de un teléfono; sirven para comparar corridas, no para prometer rendimiento.</li>
+<li><b>Un solo navegador.</b> Se probó en Chrome (motor Chromium). Safari en iOS no está cubierto.</li>
+<li><b>Sin estudio con usuarios.</b> No hay datos de aprendizaje ni de usabilidad percibida; el artículo base ya lo señalaba como limitación.</li>
+<li><b>Contenido esquemático.</b> Los modelos 3D son representaciones simplificadas.</li>
+</ul>
+
+<h1>Conclusiones</h1>
+<p>PC-Builder AR cumple de forma verificable las funciones que se propuso: menú interactivo, fichas de concepto, vista AR anclada a un marcador, controles de rotación y detalle, liberación de la cámara, vista previa sin cámara, bilingüismo y manejo de errores (28/28 pruebas). La suite reveló y permitió corregir tres defectos reales, lo que respalda su uso continuo como puerta de calidad.</p>
+<p>Hay razones sólidas para escalarlo por etapas: casi no tiene barreras de entrada, crece linealmente con el contenido, es liviano, accesible y respeta la privacidad, y su arquitectura aísla la dependencia más frágil. Falta lo decisivo: validar en celulares reales y medir el efecto en el aprendizaje con un piloto. La hoja de ruta (Tabla VII) convierte esos pasos en compuertas explícitas, de modo que la inversión en contenido y plataforma se haga solo cuando la evidencia la respalde.</p>
+
+<h1 class="nonum">Disponibilidad del código</h1>
+<p class="ni">Código, pruebas y capturas: <code>github.com/ingknarg32/Final-Dise-o</code>. Para repetir las pruebas: <code>node tests/run-e2e.mjs</code> (Node ≥ 22 y Chrome).</p>
+
+<h1 class="nonum">Referencias</h1>
+<ol class="refs">
+<li>R. T. Azuma, «A survey of augmented reality,» <i>Presence: Teleoperators and Virtual Environments</i>, vol. 6, n.º 4, pp. 355–385, 1997.</li>
+<li>I. Radu, «Augmented reality in education: A meta-review and cross-media analysis,» <i>Pers. Ubiquitous Comput.</i>, vol. 18, n.º 6, pp. 1533–1543, 2014.</li>
+<li>M. Akçayır y G. Akçayır, «Advantages and challenges associated with augmented reality for education: A systematic review of the literature,» <i>Educ. Res. Rev.</i>, vol. 20, pp. 1–11, 2017.</li>
+<li>AR.js Organization, «AR.js: Augmented reality on the web.» [En línea]. Disponible: https://github.com/AR-js-org/AR.js</li>
+<li>A-Frame, «A web framework for building 3D/AR/VR experiences.» [En línea]. Disponible: https://aframe.io</li>
+<li>Tailwind Labs, «Tailwind CSS: A utility-first CSS framework.» [En línea]. Disponible: https://tailwindcss.com</li>
+<li>J. Nielsen, «10 usability heuristics for user interface design,» Nielsen Norman Group, 1994. [En línea]. Disponible: https://www.nngroup.com/articles/ten-usability-heuristics/</li>
+<li>R. E. Mayer, <i>Multimedia Learning</i>, 2.ª ed. Cambridge, Reino Unido: Cambridge Univ. Press, 2009.</li>
+<li>W3C, «Web Content Accessibility Guidelines (WCAG) 2.1,» 2018. [En línea]. Disponible: https://www.w3.org/TR/WCAG21/</li>
+<li>H. Kato y M. Billinghurst, «Marker tracking and HMD calibration for a video-based augmented reality conferencing system,» en <i>Proc. 2nd IEEE/ACM Int. Workshop on Augmented Reality (IWAR)</i>, San Francisco, CA, EE. UU., 1999, pp. 85–94.</li>
+<li>R. C. Richey y J. D. Klein, <i>Design and Development Research: Methods, Strategies, and Issues</i>. Mahwah, NJ, EE. UU.: Lawrence Erlbaum Associates, 2007.</li>
+<li>K. Beck <i>et al.</i>, «Manifesto for Agile Software Development,» 2001. [En línea]. Disponible: https://agilemanifesto.org</li>
+<li>Emergen Research, «Augmented Reality and Virtual Reality Market,» infografía reproducida en las diapositivas del curso «HCI Week 2024». Cifras no verificadas de forma independiente por los autores.</li>
+<li>J. Brooke, «SUS: A “quick and dirty” usability scale,» en <i>Usability Evaluation in Industry</i>, P. W. Jordan <i>et al.</i>, Eds. Londres, Reino Unido: Taylor &amp; Francis, 1996, pp. 189–194.</li>
+</ol>
+
+</div>
+</body>
+</html>

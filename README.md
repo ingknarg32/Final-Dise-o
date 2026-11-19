@@ -36,6 +36,8 @@ Enlaces directos útiles: `#cpu`, `#ram`, `#gpu`, `#motherboard` (abre la ficha)
 | `lib/`, `data/`, `assets/` | Bibliotecas fijadas por versión, datos de AR.js y marcador Hiro |
 | `notebook/Algoritmos_Extraction_RA.ipynb` | Comparativo SIFT · SURF · ORB para Google Colab |
 | `informe/Informe_Guia05_PC-Builder_AR.docx` | Informe de laboratorio (formato de la guía) |
+| `docs/PC-Builder-AR_IEEE.pdf` (+ `.html`) | Documento en formato IEEE: funcionalidades, pruebas, defectos hallados y caso de escalado |
+| `tests/` | Suite E2E (`run-e2e.mjs`) y evidencias (`results/`) |
 
 ## Correspondencia con el paper y el póster
 
@@ -54,14 +56,15 @@ Enlaces directos útiles: `#cpu`, `#ram`, `#gpu`, `#motherboard` (abre la ficha)
 node tests/run-e2e.mjs      # requiere Node >= 22 y Chrome/Edge (CHROME_PATH si no está en una ruta estándar)
 ```
 
-27 casos de extremo a extremo (menú, ficha, sesión AR con marcador Hiro simulado, Rotar/Detalles, liberación de la
+28 casos de extremo a extremo (menú, ficha, sesión AR con marcador Hiro simulado, Rotar/Detalles, liberación de la
 cámara, vista previa, idioma, errores de cámara, peticiones externas, errores de consola, tamaño de botones,
-estabilidad de 6 sesiones seguidas). Resultados y capturas en `tests/results/`.
+estabilidad de 6 sesiones seguidas, maquetación móvil). Resultados y capturas en `tests/results/`.
 **Alcance:** cámara simulada, render por software y viewport móvil emulado; **no sustituye una prueba en un celular físico**.
 
 Hallazgos de estas pruebas ya corregidos en el código:
 * AR.js inicia su sistema en *toda* escena A-Frame: la «vista previa sin cámara» abría la cámara y pedía un archivo a
   `ar-js-org.github.io`. Se protege el sistema para que solo actúe si la escena declara `arjs`.
+* En móvil AR.js ensanchaba `<body>` (4501×3376 px) y la interfaz quedaba fuera de pantalla; se fija `html` sin tocar el tamaño de `body`.
 * AR.js 3.4.5 falla (`TypeError ... idPatt`) al iniciar una segunda sesión en la misma página tras una pausa.
   Por eso **«Menú» desde la vista AR recarga la página** (la cámara se libera antes); tras recargar, el destino se restaura.
 
